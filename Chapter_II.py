@@ -7,28 +7,28 @@ from psycopg2 import connect
 def add_task(name, deadline, description=None):
     task_hash = hash((results.name, results.deadline, results.description))
     if deadline:
-        cursor.execute(f'''INSERT INTO task_try_4
+        cursor.execute(f'''INSERT INTO tasks
                             VALUES ('{name}', '{deadline}', '{description}', {task_hash}
                             );''')
     else:
-        cursor.execute(f'''INSERT INTO task_try_4(name, description, task_hash)
+        cursor.execute(f'''INSERT INTO tasks(name, description, task_hash)
                             VALUES ('{results.name}', '{description}', {task_hash}
                             );''')
     print(f"Task has been added to database with hash: {task_hash}")
 
 
 def update_task(task_hash, name=None, deadline=None, description=None):
-    cursor.execute(f'''SELECT * FROM task_try_4 WHERE task_hash = '{task_hash}';''')
+    cursor.execute(f'''SELECT * FROM tasks WHERE task_hash = '{task_hash}';''')
     task_to_update = cursor.fetchone()
     if task_to_update[1] or deadline is not None:
-        cursor.execute(f'''UPDATE task_try_4
+        cursor.execute(f'''UPDATE tasks
                     SET name = '{name if name else task_to_update[0]}',
                     deadline = '{deadline if deadline else task_to_update[1]}',
                     description = '{description if description else task_to_update[2]}'
                     WHERE task_hash = '{task_hash}'
                     ;''')
     else:
-        cursor.execute(f'''UPDATE task_try_4
+        cursor.execute(f'''UPDATE tasks
                             SET name = '{name if name else task_to_update[0]}',
                             description = '{description if description else task_to_update[2]}'
                             WHERE task_hash = '{task_hash}'
@@ -37,7 +37,7 @@ def update_task(task_hash, name=None, deadline=None, description=None):
 
 
 def remove_task(task_hash):
-    cursor.execute(f'''DELETE FROM task_try_4
+    cursor.execute(f'''DELETE FROM tasks
                         WHERE task_hash = '{task_hash}'
                         ;''')
     print(f"Task with hash {task_hash} has been deleted from database")
@@ -45,9 +45,9 @@ def remove_task(task_hash):
 
 def tasks_list(all_tasks=False, tasks_for_today=False):
     if all_tasks:
-        cursor.execute('''SELECT * FROM task_try_4;''')
+        cursor.execute('''SELECT * FROM tasks;''')
     elif tasks_for_today:
-        cursor.execute(f'''SELECT * FROM task_try_4 WHERE deadline = '{datetime.date.today()}';''')
+        cursor.execute(f'''SELECT * FROM tasks WHERE deadline = '{datetime.date.today()}';''')
     tasks = cursor.fetchall()
     print("All tasks:" if all_tasks else "Tasks for today:")
     if not tasks:
@@ -98,7 +98,7 @@ cnx = connect(
 cnx.autocommit = True
 cursor = cnx.cursor()
 
-cursor.execute('''CREATE TABLE IF NOT EXISTS task_try_4
+cursor.execute('''CREATE TABLE IF NOT EXISTS tasks
                 (name text NOT NULL,
                 deadline date,
                 description text,
