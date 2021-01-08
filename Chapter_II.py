@@ -73,7 +73,7 @@ add_parser.add_argument("--deadline", help="Deadline of an adding task", type=va
 add_parser.add_argument("--description", help="Description of an adding task")
 
 update_parser = subparsers.add_parser("update", help="Update a task")
-update_parser.add_argument("--aaa", help="Name of an updating task")
+update_parser.add_argument("--name", help="Name of an updating task")
 update_parser.add_argument("--deadline", help="Deadline of an updating task", type=valid_deadline)
 update_parser.add_argument("--description", help="Description of an updating task")
 update_parser.add_argument("task_hash", help="Task hash")
